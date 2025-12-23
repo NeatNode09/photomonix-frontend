@@ -1,5 +1,13 @@
 {
-  "name": "image-enhancement",
+  "name": "photomonix_ai",
+  "version": "1.0.0",
+  "description": "A web application for image to image generation using AI.",
+  "keywords": [
+    "photomonix_ai",
+    "image-to-image",
+    "ai",
+    "image-generation"
+  ],
   "private": true,
   "type": "module",
   "scripts": {
