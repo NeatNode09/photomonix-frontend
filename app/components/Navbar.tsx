@@ -21,6 +21,7 @@ const Navbar = () => {
               to="/"
               className="flex items-center gap-2 text-2xl font-bold text-white hover:text-blue-400 transition-colors"
             >
+              <img src="/logo.svg" alt="Photomonix Logo" className="h-8 w-8" />
               Photomonix
             </Link>
           </div>
