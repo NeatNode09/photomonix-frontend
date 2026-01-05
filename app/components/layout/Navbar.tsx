@@ -26,12 +26,18 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-15">
-            <Link
-              to="/about"
+            <a
+              href="#about"
               className="text-slate-200 hover:text-white hover:underline px-3 py-2 text-sm font-medium transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .getElementById("about")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               About
-            </Link>
+            </a>
             <Link
               to="/"
               className="relative inline-flex items-center justify-center h-16 w-16 rounded-full ring-4 ring-sky-500/70 ring-offset-4 ring-offset-slate-900 bg-slate-950 shadow-md hover:shadow-lg transition-shadow mx-2"
@@ -47,12 +53,18 @@ const Navbar = () => {
                 className="h-10 w-10"
               />
             </Link>
-            <Link
-              to="/contact"
+            <a
+              href="#contact"
               className="text-slate-200 hover:text-white hover:underline px-3 py-2 text-sm font-medium transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .getElementById("contact")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               Contact
-            </Link>
+            </a>
           </div>
 
           <div className="hidden md:flex items-center gap-5">
@@ -145,18 +157,32 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur">
           <div className="px-4 pt-3 pb-4 space-y-2">
-            <Link
-              to="/about"
+            <a
+              href="#about"
               className="text-slate-200 hover:text-white block px-3 py-2 rounded-lg text-base font-medium transition-colors hover:bg-white/10"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                document
+                  .getElementById("about")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               About
-            </Link>
-            <Link
-              to="/contact"
+            </a>
+            <a
+              href="#contact"
               className="text-slate-200 hover:text-white block px-3 py-2 rounded-lg text-base font-medium transition-colors hover:bg-white/10"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                document
+                  .getElementById("contact")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               Contact
-            </Link>
+            </a>
             {isAuthenticated ? (
               <>
                 <Link

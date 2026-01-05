@@ -4,13 +4,21 @@ import { getEnhancementSuggestions } from "@services/photomonixApi";
 import { isValidImageFile } from "@utils/imageUtils";
 import LoadingOverlay from "@components/LoadingOverlay";
 import { useSuggestionsCache } from "@hooks/useCache";
+import { useAuth } from "@contexts/AuthContext";
 
 const HeroSection = () => {
   const [dragActive, setDragActive] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { getCached, setCached } = useSuggestionsCache();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   const handleFileSelect = async (file: File | null) => {
     if (!file) return;
@@ -80,8 +88,8 @@ const HeroSection = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-950">
-        <section className="relative overflow-hidden pt-16 pb-20 px-4">
+      <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-950 relative">
+        <section className="relative overflow-hidden pt-32 pb-20 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 backdrop-blur-sm rounded-full text-blue-300 text-sm font-medium mb-6 border border-blue-500/30">

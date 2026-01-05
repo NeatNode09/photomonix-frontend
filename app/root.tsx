@@ -11,8 +11,6 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 import { AuthProvider } from "@contexts/AuthContext";
-import Navbar from "@components/layout/Navbar";
-import Footer from "@components/layout/Footer";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -38,9 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
-          <Navbar />
           <div className="flex-1">{children}</div>
-          <Footer />
         </AuthProvider>
         <ScrollRestoration />
         <Scripts />
