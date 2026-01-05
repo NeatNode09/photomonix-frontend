@@ -1,6 +1,9 @@
 import React from "react";
 import type { Route } from "../+types/root";
 import HeroSection from "@sections/HeroSection";
+import FeaturesSection from "@sections/FeaturesSection";
+import TestimonialsSection from "@sections/TestimonialsSection";
+import BlogSection from "@sections/BlogSection";
 import BeforeAfterShowcase from "@sections/BeforeAfterShowcase";
 
 export function meta({}: Route.MetaArgs) {
@@ -21,6 +24,9 @@ const Home = () => {
     <>
       <HeroSection />
       <BeforeAfterShowcase />
+      <FeaturesSection />
+      <TestimonialsSection />
+      <BlogSection />
     </>
   );
 };
