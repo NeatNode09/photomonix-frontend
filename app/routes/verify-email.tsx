@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router";
-import { useAuth } from "~/contexts/AuthContext";
+import { useAuth } from "@contexts/AuthContext";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();

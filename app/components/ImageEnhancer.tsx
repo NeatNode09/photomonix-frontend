@@ -3,20 +3,17 @@ import {
   ENHANCEMENT_CATEGORIES,
   getCategoryNames,
   type EnhancementCategory,
-} from "../constants/enhancements";
-import {
-  generateEnhancedImages,
-  callWithRetry,
-} from "../services/photomonixApi";
-import type { SelectedOptions } from "../types/photomonix";
+} from "@constants/enhancements";
+import { generateEnhancedImages, callWithRetry } from "@services/photomonixApi";
+import type { SelectedOptions } from "@types/photomonix";
 import {
   sanitizeReferenceNotes,
   validateGenerationRequest,
-} from "../utils/validation";
-import LoadingOverlay from "./LoadingOverlay";
-import { useDebounce } from "../hooks/useDebounce";
-import { downloadImage } from "../utils/download";
-import DownloadProgress from "./DownloadProgress";
+} from "@utils/validation";
+import LoadingOverlay from "@components/LoadingOverlay";
+import { useDebounce } from "@hooks/useDebounce";
+import { downloadImage } from "@utils/download";
+import DownloadProgress from "@components/DownloadProgress";
 
 interface ImageEnhancerProps {
   imageFile: File;

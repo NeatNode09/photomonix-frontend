@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "~/contexts/AuthContext";
-import { ProtectedRoute } from "~/components/ProtectedRoute";
+import { useAuth } from "@contexts/AuthContext";
+import { ProtectedRoute } from "@components/ProtectedRoute";
 
 export default function Profile() {
   const { user, getProfile, updateProfile } = useAuth();

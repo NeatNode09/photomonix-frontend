@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { useAuth } from "~/contexts/AuthContext";
+import { useAuth } from "@contexts/AuthContext";
 
 export default function Register() {
   const [name, setName] = useState("");

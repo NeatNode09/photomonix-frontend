@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-import ImageEnhancer from "../components/ImageEnhancer";
+import ImageEnhancer from "@components/ImageEnhancer";
 import type { Route } from "../+types/root";
 
 export function meta({}: Route.MetaArgs) {

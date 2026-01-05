@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "@components/LoadingSpinner";
 
 type Stage = "analyzing" | "generating" | "processing";
 

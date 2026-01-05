@@ -16,7 +16,7 @@ import {
   updateProfile as updateProfileApi,
   getProfile as getProfileFn,
   auth,
-} from "~/services/api";
+} from "@services/api";
 
 export interface User {
   id: string;

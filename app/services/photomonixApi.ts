@@ -1,10 +1,10 @@
-import { PHOTOMONIX_CONFIG } from "../config/photomonix";
+import { PHOTOMONIX_CONFIG } from "@config/photomonix";
 import type {
   SuggestionServiceResponse,
   GenerateImageResponse,
   SelectedOptions,
   PhotomonixError,
-} from "../types/photomonix";
+} from "@types/photomonix";
 
 /**
  * Calls the Suggestion Service to analyze an image and get AI suggestions.
