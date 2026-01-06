@@ -89,20 +89,20 @@ const HeroSection = () => {
   return (
     <>
       <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-950 relative">
-        <section className="relative overflow-hidden pt-32 pb-20 px-4">
+        <section className="relative overflow-hidden pt-5 pb-2 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 backdrop-blur-sm rounded-full text-blue-300 text-sm font-medium mb-6 border border-blue-500/30">
+            <div className="text-center mb-0">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 backdrop-blur-sm rounded-full text-blue-300 text-sm font-medium mb-2 border border-blue-500/30">
                 <span>AI-Powered Images Enhancement</span>
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-5xl md:text-6xl font-bold text-white mb-0 leading-tight">
                 Enhance Your Photos
                 <br />
                 <span className="bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   In Seconds
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-5 leading-relaxed">
                 Upload your image and let AI do the magic. Get multiple enhanced
                 versions and choose your favorite.
               </p>
@@ -213,21 +213,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-                <Link
-                  to="/register"
-                  className="px-6 py-2 text-white font-medium text-sm hover:text-blue-300 transition-colors"
-                >
-                  Create Account
-                </Link>
-                <Link
-                  to="/login"
-                  className="px-6 py-2 text-white font-medium text-sm hover:text-blue-300 transition-colors"
-                >
-                  Sign In
-                </Link>
               </div>
             </div>
           </div>
