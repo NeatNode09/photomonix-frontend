@@ -23,6 +23,9 @@ export interface User {
   name: string;
   email: string;
   emailVerified: boolean;
+  oauthProvider?: string;
+  googleId?: string;
+  profilePicture?: string;
 }
 
 interface AuthContextType {
@@ -32,6 +35,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  loginWithGoogle: () => void;
   verifyEmail: (token: string) => Promise<boolean>;
   resendVerification: (email: string) => Promise<boolean>;
   forgotPassword: (email: string) => Promise<boolean>;
@@ -195,6 +199,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const loginWithGoogle = (): void => {
+    const apiUrl =
+      import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+    const baseUrl = apiUrl.replace("/api/auth", "");
+    window.location.href = `${baseUrl}/api/auth/google`;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -204,6 +215,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        loginWithGoogle,
         verifyEmail,
         resendVerification: resendVerificationFn,
         forgotPassword: forgotPasswordFn,

@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:5000/api/auth";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
 
 export interface AuthResponse {
   success: boolean;
@@ -10,6 +11,9 @@ export interface AuthResponse {
       name: string;
       email: string;
       emailVerified: boolean;
+      oauthProvider?: string;
+      googleId?: string;
+      profilePicture?: string;
     };
     profile?: {
       id: string;
