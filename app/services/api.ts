@@ -1,5 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+const API_BASE_URL = "https://api.photomonix.pro/api";
 
 export interface AuthResponse {
   success: boolean;
@@ -11,10 +10,18 @@ export interface AuthResponse {
       name: string;
       email: string;
       emailVerified: boolean;
+      avatarUrl?: string;
+      tokensRemaining: number;
+      tokensUsed: number;
       oauthProvider?: string;
       googleId?: string;
-      profilePicture?: string;
     };
+    tokens?: {
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: string;
+    };
+    isNewUser?: boolean;
     profile?: {
       id: string;
       name: string;
@@ -23,6 +30,7 @@ export interface AuthResponse {
     };
   };
   error?: string;
+  errors?: Array<{ field: string; message: string }>;
   requiresVerification?: boolean;
 }
 
@@ -39,9 +47,23 @@ const setAccessToken = (token: string): void => {
   }
 };
 
+const getRefreshToken = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("refreshToken");
+  }
+  return null;
+};
+
+const setRefreshToken = (token: string): void => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("refreshToken", token);
+  }
+};
+
 const clearTokens = (): void => {
   if (typeof window !== "undefined") {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
   }
 };
@@ -116,7 +138,7 @@ export const register = async (
   email: string,
   password: string
 ): Promise<AuthResponse> => {
-  return request("/register", {
+  return request("/auth/register", {
     method: "POST",
     body: JSON.stringify({ name, email, password }),
   });
@@ -126,13 +148,14 @@ export const login = async (
   email: string,
   password: string
 ): Promise<AuthResponse> => {
-  const response = await request("/login", {
+  const response = await request("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
 
-  if (response.success && response.data?.accessToken) {
-    setAccessToken(response.data.accessToken);
+  if (response.success && response.data?.tokens) {
+    setAccessToken(response.data.tokens.accessToken);
+    setRefreshToken(response.data.tokens.refreshToken);
     if (response.data.user) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
     }
@@ -142,8 +165,10 @@ export const login = async (
 };
 
 export const logout = async (): Promise<AuthResponse> => {
-  const response = await request("/logout", {
+  const refreshToken = getRefreshToken();
+  const response = await request("/auth/logout", {
     method: "POST",
+    body: JSON.stringify({ refreshToken }),
   });
 
   if (response.success) {
@@ -154,13 +179,51 @@ export const logout = async (): Promise<AuthResponse> => {
 };
 
 export const verifyEmail = async (token: string): Promise<AuthResponse> => {
-  const response = await request("/verify-email", {
+  const response = await request(
+    `/auth/verify-email?token=${encodeURIComponent(token)}`,
+    {
+      method: "GET",
+    }
+  );
+
+  return response;
+};
+
+export const resendVerification = async (
+  email: string
+): Promise<AuthResponse> => {
+  return request("/auth/resend-verification", {
     method: "POST",
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ email }),
+  });
+};
+
+export const forgotPassword = async (email: string): Promise<AuthResponse> => {
+  return request("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+};
+
+export const resetPassword = async (
+  token: string,
+  password: string
+): Promise<AuthResponse> => {
+  return request("/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ token, password }),
+  });
+};
+
+export const googleLogin = async (idToken: string): Promise<AuthResponse> => {
+  const response = await request("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ idToken }),
   });
 
-  if (response.success && response.data?.accessToken) {
-    setAccessToken(response.data.accessToken);
+  if (response.success && response.data?.tokens) {
+    setAccessToken(response.data.tokens.accessToken);
+    setRefreshToken(response.data.tokens.refreshToken);
     if (response.data.user) {
       localStorage.setItem("user", JSON.stringify(response.data.user));
     }
@@ -169,46 +232,13 @@ export const verifyEmail = async (token: string): Promise<AuthResponse> => {
   return response;
 };
 
-export const resendVerification = async (
-  email: string
-): Promise<AuthResponse> => {
-  return request("/resend-verification", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-};
-
-export const forgotPassword = async (email: string): Promise<AuthResponse> => {
-  return request("/forgot-password", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-};
-
-export const resetPasswordWithToken = async (
-  token: string,
-  newPassword: string,
-  confirmPassword: string
-): Promise<AuthResponse> => {
-  const response = await request("/reset-password-with-token", {
-    method: "POST",
-    body: JSON.stringify({ token, newPassword, confirmPassword }),
-  });
-
-  if (response.success && response.data?.accessToken) {
-    setAccessToken(response.data.accessToken);
-  }
-
-  return response;
-};
-
-export const resetPassword = async (
-  email: string,
+export const changePassword = async (
+  currentPassword: string,
   newPassword: string
 ): Promise<AuthResponse> => {
-  return request("/reset-password", {
+  return request("/auth/change-password", {
     method: "POST",
-    body: JSON.stringify({ email, newPassword }),
+    body: JSON.stringify({ currentPassword, newPassword }),
   });
 };
 
@@ -238,8 +268,17 @@ export const updateProfile = async (updates: {
 
 const refreshTokenFn = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/refresh`, {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      return false;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
       credentials: "include",
     });
 
@@ -259,6 +298,8 @@ export const refreshToken = refreshTokenFn;
 export const auth = {
   getAccessToken,
   setAccessToken,
+  getRefreshToken,
+  setRefreshToken,
   clearTokens,
   getUser,
   isAuthenticated,

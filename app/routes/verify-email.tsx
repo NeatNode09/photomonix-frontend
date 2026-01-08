@@ -28,13 +28,13 @@ export default function VerifyEmail() {
 
     try {
       const result = await verifyEmail(token);
-      if (result) {
+      if (result.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/");
+          navigate("/login");
         }, 2000);
       } else {
-        setError("Invalid or expired verification token");
+        setError(result.message || "Invalid or expired verification token");
         setShowResend(true);
       }
     } catch (err) {
@@ -57,11 +57,11 @@ export default function VerifyEmail() {
 
     try {
       const result = await resendVerification(email);
-      if (result) {
+      if (result.success) {
         setSuccess(true);
         setShowResend(false);
       } else {
-        setError("Failed to resend verification email");
+        setError(result.message || "Failed to resend verification email");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

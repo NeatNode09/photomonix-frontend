@@ -11,6 +11,10 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 import { AuthProvider } from "@contexts/AuthContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// Get Google Client ID from environment variable
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,9 +39,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <AuthProvider>
-          <div className="flex-1">{children}</div>
-        </AuthProvider>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <AuthProvider>
+            <div className="flex-1">{children}</div>
+          </AuthProvider>
+        </GoogleOAuthProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

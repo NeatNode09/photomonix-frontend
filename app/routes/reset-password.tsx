@@ -47,13 +47,15 @@ export default function ResetPassword() {
         newPassword,
         confirmPassword
       );
-      if (result) {
+      if (result.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/");
+          navigate("/login");
         }, 2000);
       } else {
-        setError("Password reset failed. Token may have expired.");
+        setError(
+          result.message || "Password reset failed. Token may have expired."
+        );
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

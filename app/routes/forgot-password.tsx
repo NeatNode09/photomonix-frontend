@@ -16,10 +16,10 @@ export default function ForgotPassword() {
 
     try {
       const result = await forgotPassword(email);
-      if (result) {
+      if (result.success) {
         setSuccess(true);
       } else {
-        setError("User not found with this email address");
+        setError(result.message || "An error occurred. Please try again.");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

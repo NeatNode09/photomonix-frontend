@@ -4,7 +4,7 @@ import { useAuth } from "@contexts/AuthContext";
 import { ProtectedRoute } from "@components/ProtectedRoute";
 
 export default function Profile() {
-  const { user, getProfile, updateProfile } = useAuth();
+  const { user, getProfile, updateProfile, changePassword } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || "");
@@ -29,6 +29,7 @@ export default function Profile() {
     setSuccess("");
 
     const updates: any = {};
+    let passwordChanged = false;
 
     if (name !== user?.name) {
       updates.name = name;
@@ -47,34 +48,53 @@ export default function Profile() {
         setError("Current password is required to set a new password");
         return;
       }
-      updates.currentPassword = currentPassword;
-      updates.newPassword = newPassword;
-      updates.confirmPassword = confirmPassword;
+
+      // Use changePassword endpoint for password changes
+      setIsLoading(true);
+      try {
+        const result = await changePassword(currentPassword, newPassword);
+        if (result.success) {
+          passwordChanged = true;
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        } else {
+          setError(result.message || "Failed to change password");
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        setError("An error occurred while changing password");
+        setIsLoading(false);
+        return;
+      }
     }
 
-    if (Object.keys(updates).length === 0) {
+    // Update profile name if changed
+    if (Object.keys(updates).length > 0) {
+      setIsLoading(true);
+      try {
+        const result = await updateProfile(updates);
+        if (!result) {
+          setError("Failed to update profile");
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        setError("An error occurred while updating profile");
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    if (Object.keys(updates).length === 0 && !passwordChanged) {
       setError("No changes to save");
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const result = await updateProfile(updates);
-      if (result) {
-        setSuccess("Profile updated successfully!");
-        setIsEditing(false);
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        setError("Failed to update profile");
-      }
-    } catch (err) {
-      setError("An error occurred while updating profile");
-    } finally {
-      setIsLoading(false);
-    }
+    setSuccess("Profile updated successfully!");
+    setIsEditing(false);
+    setIsLoading(false);
   };
 
   if (!user) {
@@ -145,6 +165,15 @@ export default function Profile() {
                           ? "Verified"
                           : "Pending Verification"}
                       </span>
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300">
+                      Token Balance
+                    </label>
+                    <p className="mt-1 text-lg text-white">
+                      {user.tokensRemaining} remaining / {user.tokensUsed} used
                     </p>
                   </div>
 

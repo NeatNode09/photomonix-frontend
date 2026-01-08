@@ -26,7 +26,7 @@ export default function AuthCallback() {
         // Fetch user profile
         try {
           const response = await fetch(
-            `${import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth"}/profile`,
+            `${import.meta.env.VITE_API_URL || "https://api.photomonix.pro/api/auth"}/profile`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

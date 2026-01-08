@@ -12,7 +12,9 @@ import {
   verifyEmail as verifyEmailFn,
   resendVerification,
   forgotPassword,
-  resetPasswordWithToken,
+  resetPassword,
+  changePassword as changePasswordFn,
+  googleLogin,
   updateProfile as updateProfileApi,
   getProfile as getProfileFn,
   auth,
@@ -23,27 +25,49 @@ export interface User {
   name: string;
   email: string;
   emailVerified: boolean;
+  avatarUrl?: string;
+  tokensRemaining: number;
+  tokensUsed: number;
   oauthProvider?: string;
   googleId?: string;
-  profilePicture?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message?: string }>;
+  register: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
-  loginWithGoogle: () => void;
-  verifyEmail: (token: string) => Promise<boolean>;
-  resendVerification: (email: string) => Promise<boolean>;
-  forgotPassword: (email: string) => Promise<boolean>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGoogleToken: (
+    idToken: string
+  ) => Promise<{ success: boolean; message?: string }>;
+  verifyEmail: (
+    token: string
+  ) => Promise<{ success: boolean; message?: string }>;
+  resendVerification: (
+    email: string
+  ) => Promise<{ success: boolean; message?: string }>;
+  forgotPassword: (
+    email: string
+  ) => Promise<{ success: boolean; message?: string }>;
   resetPasswordWithToken: (
     token: string,
     newPassword: string,
     confirmPassword: string
-  ) => Promise<boolean>;
+  ) => Promise<{ success: boolean; message?: string }>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<{ success: boolean; message?: string }>;
   updateProfile: (updates: {
     name?: string;
     currentPassword?: string;
@@ -68,17 +92,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await loginFn(email, password);
       if (response.success && response.data?.user) {
         setUser(response.data.user);
-        return true;
+        return { success: true };
       }
-      return false;
+      return { success: false, message: response.message || "Login failed" };
     } catch (error) {
       console.error("Login failed:", error);
-      return false;
+      return { success: false, message: "An error occurred during login" };
     }
   };
 
@@ -86,13 +113,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     name: string,
     email: string,
     password: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await registerFn(name, email, password);
-      return response.success;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error("Registration failed:", error);
-      return false;
+      return {
+        success: false,
+        message: "An error occurred during registration",
+      };
     }
   };
 
@@ -105,37 +135,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const verifyEmail = async (token: string): Promise<boolean> => {
+  const verifyEmail = async (
+    token: string
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await verifyEmailFn(token);
-      if (response.success && response.data?.user) {
-        setUser(response.data.user);
-        return true;
-      }
-      return false;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error("Email verification failed:", error);
-      return false;
+      return {
+        success: false,
+        message: "An error occurred during verification",
+      };
     }
   };
 
-  const resendVerificationFn = async (email: string): Promise<boolean> => {
+  const resendVerificationFn = async (
+    email: string
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await resendVerification(email);
-      return response.success;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error("Resend verification failed:", error);
-      return false;
+      return { success: false, message: "An error occurred" };
     }
   };
 
-  const forgotPasswordFn = async (email: string): Promise<boolean> => {
+  const forgotPasswordFn = async (
+    email: string
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await forgotPassword(email);
-      return response.success;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error("Forgot password failed:", error);
-      return false;
+      return { success: false, message: "An error occurred" };
     }
   };
 
@@ -143,21 +178,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     token: string,
     newPassword: string,
     confirmPassword: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
-      const response = await resetPasswordWithToken(
-        token,
-        newPassword,
-        confirmPassword
-      );
-      if (response.success && response.data?.user) {
-        setUser(response.data.user);
-        return true;
+      // Client-side validation for password confirmation
+      if (newPassword !== confirmPassword) {
+        return { success: false, message: "Passwords do not match" };
       }
-      return false;
+      const response = await resetPassword(token, newPassword);
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error("Password reset failed:", error);
-      return false;
+      return { success: false, message: "An error occurred" };
+    }
+  };
+
+  const changePasswordMethod = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const response = await changePasswordFn(currentPassword, newPassword);
+      return { success: response.success, message: response.message };
+    } catch (error) {
+      console.error("Password change failed:", error);
+      return { success: false, message: "An error occurred" };
     }
   };
 
@@ -189,6 +233,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           name: response.data.profile.name,
           email: response.data.profile.email,
           emailVerified: true,
+          tokensRemaining: 0,
+          tokensUsed: 0,
         });
         return true;
       }
@@ -199,11 +245,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const loginWithGoogle = (): void => {
-    const apiUrl =
-      import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
-    const baseUrl = apiUrl.replace("/api/auth", "");
-    window.location.href = `${baseUrl}/api/auth/google`;
+  const loginWithGoogleToken = async (
+    idToken: string
+  ): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const response = await googleLogin(idToken);
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        return { success: true, message: response.message };
+      }
+      return {
+        success: false,
+        message: response.message || "Google login failed",
+      };
+    } catch (error) {
+      console.error("Google login failed:", error);
+      return {
+        success: false,
+        message: "An error occurred during Google login",
+      };
+    }
+  };
+
+  const loginWithGoogle = async (): Promise<void> => {
+    // TODO: Implement Google Sign-In library integration
+    // For now, keep the redirect approach as a fallback
+    // Once Google library is integrated:
+    // 1. Initialize Google Sign-In
+    // 2. Get ID token from Google
+    // 3. Call googleLogin(idToken)
+    // 4. Set user state
+
+    window.location.href = "https://api.photomonix.pro/api/auth/google";
   };
 
   return (
@@ -216,10 +289,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         register,
         logout,
         loginWithGoogle,
+        loginWithGoogleToken,
         verifyEmail,
         resendVerification: resendVerificationFn,
         forgotPassword: forgotPasswordFn,
         resetPasswordWithToken: resetPasswordWithTokenFn,
+        changePassword: changePasswordMethod,
         updateProfile: updateProfileFn,
         getProfile,
       }}
