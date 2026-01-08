@@ -40,8 +40,9 @@ const Footer = () => {
 
         <div className="border-t border-slate-700 mb-8"></div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex gap-4 order-2 md:order-1">
+        <div className="grid grid-cols-3 gap-6 items-center">
+          {/* Left: Social Links */}
+          <div className="flex gap-4 justify-start">
             <a
               href="https://linkedin.com/company/neatnode"
               target="_blank"
@@ -77,20 +78,24 @@ const Footer = () => {
             </a>
           </div>
 
-          <p className="text-slate-400 text-sm order-1 md:order-2">
-            © {currentYear} Photomonix. All rights reserved.
-          </p>
+          {/* Center: Copyright */}
+          <div className="text-center">
+            <p className="text-slate-400 text-sm">
+              © {currentYear} Photomonix. All rights reserved.
+            </p>
+          </div>
 
-          <div className="flex gap-6 order-3">
+          {/* Right: Links */}
+          <div className="flex gap-6 justify-end">
             <Link
               to="/terms"
-              className="text-slate-400 hover:text-white transition-colors text-sm"
+              className="text-slate-400 hover:text-white transition-colors text-sm font-medium"
             >
               Terms & Conditions
             </Link>
             <Link
               to="/privacy"
-              className="text-slate-400 hover:text-white transition-colors text-sm"
+              className="text-slate-400 hover:text-white transition-colors text-sm font-medium"
             >
               Privacy Policy
             </Link>

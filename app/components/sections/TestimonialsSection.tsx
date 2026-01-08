@@ -87,7 +87,7 @@ const StarRating = ({ rating }: { rating: number }) => {
 
 const TestimonialsSection = () => {
   return (
-    <section className="relative py-20 px-4 bg-linear-to-br from-gray-950 via-slate-900 to-gray-950">
+    <section className="relative py-10 px-2 bg-linear-to-br from-gray-950 via-slate-900 to-gray-950">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
@@ -96,7 +96,7 @@ const TestimonialsSection = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-cyan-300 text-sm font-medium mb-6 border border-cyan-500/30">
             <span>What Our Users Say</span>
           </div>

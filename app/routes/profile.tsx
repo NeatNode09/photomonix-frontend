@@ -117,7 +117,28 @@ export default function Profile() {
         <div className="max-w-2xl mx-auto">
           <div className="rounded-lg bg-gray-800 shadow-md overflow-hidden">
             <div className="px-6 py-8">
-              <h1 className="text-3xl font-bold text-white mb-8">My Profile</h1>
+              <div className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold text-white">My Profile</h1>
+                <button
+                  onClick={() => navigate("/")}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
+                  Back to Home
+                </button>
+              </div>
 
               {error && (
                 <div className="rounded-md bg-red-50 p-4 mb-6">

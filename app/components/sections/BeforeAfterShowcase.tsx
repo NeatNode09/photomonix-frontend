@@ -60,10 +60,10 @@ const BeforeAfterShowcase = () => {
   };
 
   return (
-    <section className="py-1 px-4 bg-linear-to-b from-gray-900 via-slate-900 to-gray-950">
+    <section className="py-1 px-10 bg-linear-to-b from-gray-900 via-slate-900 to-gray-950">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-cyan-300 text-sm font-medium mb-6 border border-cyan-500/30">
+          <div className="inline-flex items-center gap-2 px-6 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-cyan-300 text-sm font-medium mb-6 mt-4 border border-cyan-500/30">
             <span>AI-Powered Results</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">

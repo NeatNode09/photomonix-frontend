@@ -138,7 +138,7 @@ const features: Feature[] = [
 
 const FeaturesSection = () => {
   return (
-    <section className="relative py-20 px-4 bg-linear-to-br from-slate-950 via-gray-900 to-slate-950">
+    <section className="relative py-4 px-4 bg-linear-to-br from-slate-950 via-gray-900 to-slate-950">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -147,7 +147,7 @@ const FeaturesSection = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 backdrop-blur-sm rounded-full text-blue-300 text-sm font-medium mb-6 border border-blue-500/30">
             <span>Powerful Features</span>
           </div>

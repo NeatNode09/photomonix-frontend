@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "@contexts/AuthContext";
 
@@ -6,14 +6,42 @@ const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate("/");
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
+  // Get user initial for avatar (first letter)
+  const getUserInitials = () => {
+    if (!user?.name) return "U";
+    return user.name[0].toUpperCase();
   };
 
   return (
-    <nav className="py-4 sticky top-0 z-50">
+    <nav className="py-3 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between bg-slate-900/90 text-slate-100 rounded-full shadow-lg shadow-black/30 border border-slate-800 px-4 sm:px-6 lg:px-8 h-20 backdrop-blur">
           <div className="flex items-center">
@@ -25,7 +53,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center gap-15">
+          <div className="hidden md:flex items-center gap-6">
             <a
               href="#about"
               className="text-slate-200 hover:text-white hover:underline px-3 py-2 text-sm font-medium transition-colors"
@@ -40,7 +68,7 @@ const Navbar = () => {
             </a>
             <Link
               to="/"
-              className="relative inline-flex items-center justify-center h-16 w-16 rounded-full ring-4 ring-sky-500/70 ring-offset-4 ring-offset-slate-900 bg-slate-950 shadow-md hover:shadow-lg transition-shadow mx-2"
+              className="relative inline-flex items-center justify-center h-16 w-16 rounded-full ring-4 ring-sky-500/70 ring-offset-4 ring-offset-slate-900 bg-slate-950 shadow-md hover:shadow-lg transition-shadow"
               aria-label="Photomonix home"
             >
               <span
@@ -69,21 +97,95 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center gap-5">
             {isAuthenticated ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="text-slate-200 hover:text-white px-3 py-2 text-sm font-medium transition-colors"
-                >
-                  Profile
-                </Link>
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="rounded-full bg-white/10 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-white/20 transition-colors border border-white/10"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent border-0 p-0"
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
                 >
-                  Logout
+                  {user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm">
+                      {getUserInitials()}
+                    </div>
+                  )}
                 </button>
-              </>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-slate-700 flex flex-col items-center">
+                      {user?.avatarUrl ? (
+                        <img
+                          src={user.avatarUrl}
+                          alt={user.name}
+                          className="w-16 h-16 rounded-full mb-3"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-bold text-2xl mb-3">
+                          {getUserInitials()}
+                        </div>
+                      )}
+                      <p className="text-white font-semibold text-sm truncate w-full text-center">
+                        {user?.name}
+                      </p>
+                      <p className="text-slate-400 text-xs truncate w-full text-center mt-1">
+                        {user?.email}
+                      </p>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        to="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          handleLogout();
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors text-left"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                          />
+                        </svg>
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link
@@ -185,15 +287,38 @@ const Navbar = () => {
             </a>
             {isAuthenticated ? (
               <>
+                <div className="px-4 py-3 bg-slate-800 rounded-lg mb-2 flex flex-col items-center">
+                  {user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className="w-16 h-16 rounded-full mb-3"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-bold text-2xl mb-3">
+                      {getUserInitials()}
+                    </div>
+                  )}
+                  <p className="text-white font-semibold text-sm truncate w-full text-center">
+                    {user?.name}
+                  </p>
+                  <p className="text-slate-400 text-xs truncate w-full text-center mt-1">
+                    {user?.email}
+                  </p>
+                </div>
                 <Link
                   to="/profile"
                   className="text-slate-200 hover:text-white block px-3 py-2 rounded-lg text-base font-medium transition-colors hover:bg-white/10"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Profile
                 </Link>
                 <button
                   type="button"
-                  onClick={handleLogout}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
                   className="w-full text-left text-white bg-white/10 hover:bg-white/20 block px-4 py-2 rounded-full text-sm font-semibold transition-colors border border-white/10"
                 >
                   Logout

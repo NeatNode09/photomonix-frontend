@@ -13,7 +13,6 @@ import "./app.css";
 import { AuthProvider } from "@contexts/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-// Get Google Client ID from environment variable
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 export const links: Route.LinksFunction = () => [
