@@ -14,7 +14,6 @@ const Navbar = () => {
     navigate("/");
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -34,10 +33,16 @@ const Navbar = () => {
     };
   }, [dropdownOpen]);
 
-  // Get user initial for avatar (first letter)
   const getUserInitials = () => {
     if (!user?.name) return "U";
     return user.name[0].toUpperCase();
+  };
+
+  const [avatarError, setAvatarError] = useState(false);
+  const handleAvatarError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    setAvatarError(true);
   };
 
   return (
@@ -104,14 +109,17 @@ const Navbar = () => {
                   aria-expanded={dropdownOpen}
                   aria-haspopup="true"
                 >
-                  {user?.avatarUrl ? (
+                  {user?.avatarUrl && !avatarError ? (
                     <img
                       src={user.avatarUrl}
                       alt={user.name}
-                      className="w-10 h-10 rounded-full"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={handleAvatarError}
+                      className="w-10 h-10 rounded-full object-cover border border-slate-700/70"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-100 font-semibold text-sm border border-slate-700/70">
                       {getUserInitials()}
                     </div>
                   )}
@@ -120,14 +128,17 @@ const Navbar = () => {
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-72 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2 z-50">
                     <div className="px-4 py-3 border-b border-slate-700 flex flex-col items-center">
-                      {user?.avatarUrl ? (
+                      {user?.avatarUrl && !avatarError ? (
                         <img
                           src={user.avatarUrl}
                           alt={user.name}
-                          className="w-16 h-16 rounded-full mb-3"
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                          onError={handleAvatarError}
+                          className="w-16 h-16 rounded-full object-cover border border-slate-700/70 mb-3"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-bold text-2xl mb-3">
+                        <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-slate-100 font-bold text-2xl border border-slate-700/70 mb-3">
                           {getUserInitials()}
                         </div>
                       )}
@@ -137,6 +148,20 @@ const Navbar = () => {
                       <p className="text-slate-400 text-xs truncate w-full text-center mt-1">
                         {user?.email}
                       </p>
+                      <div className="mt-2 px-3 py-1.5 bg-slate-700/50 rounded-md">
+                        <p className="text-slate-300 text-xs text-center">
+                          Tokens Used:{" "}
+                          <span className="font-semibold text-emerald-400">
+                            {user?.tokensUsed || 0}
+                          </span>
+                        </p>
+                        <p className="text-slate-300 text-xs text-center mt-0.5">
+                          Remaining:{" "}
+                          <span className="font-semibold text-sky-400">
+                            {user?.tokensRemaining || 0}
+                          </span>
+                        </p>
+                      </div>
                     </div>
 
                     <div className="py-1">
@@ -288,14 +313,17 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <div className="px-4 py-3 bg-slate-800 rounded-lg mb-2 flex flex-col items-center">
-                  {user?.avatarUrl ? (
+                  {user?.avatarUrl && !avatarError ? (
                     <img
                       src={user.avatarUrl}
                       alt={user.name}
-                      className="w-16 h-16 rounded-full mb-3"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={handleAvatarError}
+                      className="w-16 h-16 rounded-full object-cover border border-slate-700/70 mb-3"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white font-bold text-2xl mb-3">
+                    <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-slate-100 font-bold text-2xl border border-slate-700/70 mb-3">
                       {getUserInitials()}
                     </div>
                   )}
