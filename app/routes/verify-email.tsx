@@ -31,7 +31,7 @@ export default function VerifyEmail() {
       if (result.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/login");
+          navigate("/");
         }, 2000);
       } else {
         setError(result.message || "Invalid or expired verification token");
