@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import ImageEnhancer from "@components/ImageEnhancer";
+import Navbar from "@components/layout/Navbar";
 import type { Route } from "../+types/root";
+import type { SuggestionServiceResponse } from "~/types/photomonix";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,7 +23,7 @@ const Edit = () => {
   const location = useLocation();
   const state = location.state as {
     imageFile?: File;
-    suggestions?: string[];
+    suggestions?: SuggestionServiceResponse;
   } | null;
   const imageFile = state?.imageFile;
   const suggestions = state?.suggestions;
@@ -34,6 +36,7 @@ const Edit = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-950 to-black">
+      <Navbar />
       <div className="pt-20 px-4 pb-10">
         <div className="max-w-7xl mx-auto">
           {imageFile && suggestions ? (

@@ -1,24 +1,18 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { getEnhancementSuggestions } from "@services/photomonixApi";
+import { useNavigate } from "react-router";
+import { getEnhancementSuggestionsQueued } from "@services/photomonixApi";
 import { isValidImageFile } from "@utils/imageUtils";
 import LoadingOverlay from "@components/LoadingOverlay";
 import { useSuggestionsCache } from "@hooks/useCache";
-import { useAuth } from "@contexts/AuthContext";
+import type { SuggestionServiceResponse } from "~/types/photomonix";
 
 const HeroSection = () => {
   const [dragActive, setDragActive] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const navigate = useNavigate();
   const { getCached, setCached } = useSuggestionsCache();
-  const { isAuthenticated, logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
 
   const handleFileSelect = async (file: File | null) => {
     if (!file) return;
@@ -36,13 +30,13 @@ const HeroSection = () => {
       // Check cache first
       const cachedSuggestions = await getCached(file);
 
-      let suggestions: string[];
+      let suggestions: SuggestionServiceResponse;
       if (cachedSuggestions) {
         // Use cached suggestions
         suggestions = cachedSuggestions;
       } else {
         // Fetch from API and cache
-        suggestions = await getEnhancementSuggestions(file);
+        suggestions = await getEnhancementSuggestionsQueued(file);
         await setCached(file, suggestions);
       }
 

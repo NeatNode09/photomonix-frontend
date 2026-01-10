@@ -1,6 +1,21 @@
-/** Response from Suggestion Service (Port 8000) */
+/** Response from Suggestion Service (Port 8000) - Categorized suggestions */
 export interface SuggestionServiceResponse {
-  enhancement_prompts: string[];
+  Background: string[];
+  Lighting: string[];
+  Style: string[];
+  Composition: string[];
+  Focus: string[];
+  Props: string[];
+  Angles: string[];
+  debug_caption?: string;
+}
+
+/** Category keys for type safety */
+export type EnhancementCategory = 'Background' | 'Lighting' | 'Style' | 'Composition' | 'Focus' | 'Props' | 'Angles';
+
+/** Categorized suggestions for UI rendering */
+export interface CategorizedSuggestions {
+  [K in EnhancementCategory]: string[];
 }
 
 /** Selected enhancement options structure */
@@ -47,4 +62,19 @@ export interface ApiCallConfig {
   timeout?: number;
   retries?: number;
   onProgress?: (progress: number) => void;
+}
+
+/** Token tracking response */
+export interface TokenTrackingResponse {
+  tokens_used: number;
+  tokens_remaining: number;
+  total_tokens: number;
+}
+
+/** Service health check response */
+export interface ServiceHealthResponse {
+  status: 'healthy' | 'degraded' | 'offline';
+  service: string;
+  timestamp: string;
+}
 }

@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { hashFile } from "../utils/imageUtils";
+import type { SuggestionServiceResponse } from "~/types/photomonix";
 
 interface CacheEntry<T> {
   data: T;
@@ -11,12 +12,12 @@ interface CacheEntry<T> {
  * @param ttl Time-to-live in milliseconds (default: 1 hour)
  */
 export function useSuggestionsCache(ttl: number = 3600000) {
-  const [cache, setCache] = useState<Map<string, CacheEntry<string[]>>>(
-    new Map()
-  );
+  const [cache, setCache] = useState<
+    Map<string, CacheEntry<SuggestionServiceResponse>>
+  >(new Map());
 
   const getCached = useCallback(
-    async (file: File): Promise<string[] | null> => {
+    async (file: File): Promise<SuggestionServiceResponse | null> => {
       const hash = await hashFile(file);
       const entry = cache.get(hash);
 
@@ -34,14 +35,17 @@ export function useSuggestionsCache(ttl: number = 3600000) {
     [cache, ttl]
   );
 
-  const setCached = useCallback(async (file: File, data: string[]) => {
-    const hash = await hashFile(file);
-    setCache((prev) => {
-      const newCache = new Map(prev);
-      newCache.set(hash, { data, timestamp: Date.now() });
-      return newCache;
-    });
-  }, []);
+  const setCached = useCallback(
+    async (file: File, data: SuggestionServiceResponse) => {
+      const hash = await hashFile(file);
+      setCache((prev) => {
+        const newCache = new Map(prev);
+        newCache.set(hash, { data, timestamp: Date.now() });
+        return newCache;
+      });
+    },
+    []
+  );
 
   const clearCache = useCallback(() => {
     setCache(new Map());
