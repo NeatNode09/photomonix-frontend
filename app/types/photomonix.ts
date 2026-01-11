@@ -11,7 +11,14 @@ export interface SuggestionServiceResponse {
 }
 
 /** Category keys for type safety */
-export type EnhancementCategory = 'Background' | 'Lighting' | 'Style' | 'Composition' | 'Focus' | 'Props' | 'Angles';
+export type EnhancementCategory =
+  | "Background"
+  | "Lighting"
+  | "Style"
+  | "Composition"
+  | "Focus"
+  | "Props"
+  | "Angles";
 
 /** Categorized suggestions for UI rendering */
 export interface CategorizedSuggestions {
@@ -73,8 +80,7 @@ export interface TokenTrackingResponse {
 
 /** Service health check response */
 export interface ServiceHealthResponse {
-  status: 'healthy' | 'degraded' | 'offline';
+  status: "healthy" | "degraded" | "offline";
   service: string;
   timestamp: string;
-}
 }

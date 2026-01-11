@@ -6,7 +6,7 @@ import type {
   PhotomonixError,
   TokenTrackingResponse,
   ServiceHealthResponse,
-} from "@types/photomonix";
+} from "~/types/photomonix";
 import { compressImage } from "@utils/imageUtils";
 import { requestQueue } from "@utils/requestQueue";
 
@@ -85,10 +85,26 @@ export async function generateEnhancedImages(
   // Compress image before sending
   const compressedFile = await compressImage(imageFile, 1920, 0.9);
 
+  // Sanitize selected options: remove empty strings and empty categories
+  const selectedClean: SelectedOptions = Object.entries(selectedOptions).reduce(
+    (acc, [key, values]) => {
+      const cleaned = Array.isArray(values)
+        ? values.filter((v) => typeof v === "string" && v.trim().length > 0)
+        : [];
+      if (cleaned.length > 0) {
+        acc[key] = cleaned;
+      }
+      return acc;
+    },
+    {} as SelectedOptions
+  );
+
   const formData = new FormData();
   formData.append("file", compressedFile);
-  formData.append("selected", JSON.stringify(selectedOptions));
-  formData.append("reference_notes", referenceNotes);
+  formData.append("selected", JSON.stringify(selectedClean));
+  if (referenceNotes && referenceNotes.trim().length > 0) {
+    formData.append("reference_notes", referenceNotes.trim());
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(
@@ -97,14 +113,13 @@ export async function generateEnhancedImages(
   );
 
   // Simulate progressive loading
+  const startTime = Date.now();
   const progressInterval = setInterval(() => {
     const elapsed = Date.now() - startTime;
     const estimatedTotal = 45000; // 45 seconds average
     const progress = Math.min(95, (elapsed / estimatedTotal) * 100);
     onProgress?.(progress);
   }, 2000);
-
-  const startTime = Date.now();
 
   try {
     const response = await fetch(

@@ -1,5 +1,4 @@
 import type { SelectedOptions } from "../types/photomonix";
-import { ENHANCEMENT_CATEGORIES } from "../constants/enhancements";
 
 // Sanitizes user-provided reference notes.
 export function sanitizeReferenceNotes(text: string): string {
@@ -22,21 +21,21 @@ export function validateSelectedOptions(selectedOptions: SelectedOptions): {
   }
 
   for (const [category, options] of Object.entries(selectedOptions)) {
+    if (typeof category !== "string" || category.trim().length === 0) {
+      errors.push("Category keys must be non-empty strings");
+      continue;
+    }
+
     if (!Array.isArray(options)) {
       errors.push(`Options for ${category} must be an array`);
       continue;
     }
 
-    if (!(category in ENHANCEMENT_CATEGORIES)) {
-      errors.push(`Invalid category: ${category}`);
-      continue;
-    }
-
-    const validOptions =
-      ENHANCEMENT_CATEGORIES[category as keyof typeof ENHANCEMENT_CATEGORIES];
     for (const option of options) {
-      if (!validOptions.includes(option)) {
-        errors.push(`Invalid option "${option}" for category ${category}`);
+      if (typeof option !== "string" || option.trim().length === 0) {
+        errors.push(
+          `Invalid option for category ${category}: must be a non-empty string`
+        );
       }
     }
   }
